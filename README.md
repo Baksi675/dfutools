@@ -29,7 +29,7 @@ This tool provides essential bootloader communication features such as flash era
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/dfutools.git
+git clone https://github.com/Baksi675/dfutools.git
 cd dfutools
 ```
 
@@ -106,7 +106,6 @@ dfutools set-rdp -e enable -p /dev/ttyUSB0
 ## 📄 License
 
 This project is free to use and modify.  
-Add your preferred license here (MIT recommended).
 
 ---
 
