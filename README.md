@@ -78,6 +78,8 @@ dfutools <command> --help
 | `get-cid`    | Get MCU chip ID |
 | `get-rdp`    | Get MCU flash RDP status |
 | `set-rdp`    | Set MCU flash RDP status |
+| `get-wrp`    | Get MCU flash WRP status |
+| `set-wrp`    | Set MCU flash WRP status |
 | `erase`      | Erase the flash |
 | `write`      | Write to the flash |
 | `read`       | Read from the flash |
