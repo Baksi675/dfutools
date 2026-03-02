@@ -120,13 +120,14 @@ def handle_recv_packet(ser: Serial, debug: bool):
 def parse_hex(value: str) -> int:
     return int(value, 16)
 
-@app.command()
+@app.command(
+	help = "Get bootloader version."
+)
 def get_ver(
     port: str = typer.Option(..., "--port", "-p", help = "Device opened on serial port, e.g. /dev/ttyUSB0" ),
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Get bootloader version."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_GET_VER_LEN
@@ -157,13 +158,14 @@ def get_ver(
         typer.echo(f"Connection error: {e}")
         raise typer.Exit(1)
 
-@app.command()
+@app.command(
+	help = "Get available command list."
+)
 def get_cmds(
     port: str = typer.Option(..., "--port", "-p", help = "Device opened on serial port, e.g. /dev/ttyUSB0" ),
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Get available command list."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_GET_CMDS_LEN
@@ -198,13 +200,14 @@ def get_cmds(
         typer.echo(f"Connection error: {e}")
         raise typer.Exit(1)
 
-@app.command()
+@app.command(
+	help = "Get MCU chip ID."
+)
 def get_cid(
     port: str = typer.Option(..., "--port", "-p", help = "Device opened on serial port, e.g. /dev/ttyUSB0" ),
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Get MCU chip ID."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_GET_CID_LEN
@@ -237,7 +240,8 @@ def get_cid(
         raise typer.Exit(1)
 
 @app.command(
-    help="0xA5 - flash memory unprotected\n\n"
+	help = "Get MCU flash RDP status",
+	epilog = "0xA5 - flash memory unprotected\n\n"
     "0x00 - flash memory protected"
 )
 def get_rdp(
@@ -245,7 +249,6 @@ def get_rdp(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Get MCU flash RDP status"""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_GET_RDP_LEN
@@ -277,7 +280,8 @@ def get_rdp(
         raise typer.Exit(1)
 
 @app.command(
-    help="WARNING: After the RDP has been set, disabling it causes a flash memory mass erase.\n\n"
+	help = "Set MCU flash RDP status.",
+    epilog="WARNING: After the RDP has been set, disabling it causes a flash memory mass erase.\n\n"
     "Automatically resets the MCU.\n\n"
     "Requires POR without a debugger attached to take effect."
 )
@@ -287,7 +291,6 @@ def set_rdp(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Set MCU flash RDP status."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_SET_RDP_LEN
@@ -328,13 +331,14 @@ def set_rdp(
         typer.echo(f"Connection error: {e}")
         raise typer.Exit(1)
 
-@app.command()
+@app.command(
+	help = "Get write protection of flash pages."
+)
 def get_wrp(
     port: str = typer.Option(..., "--port", "-p", help="Device opened on serial port, e.g. /dev/ttyUSB0"),
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help="Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Get write protection of flash pages."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_GET_WRP_LEN
@@ -375,7 +379,8 @@ def get_wrp(
         raise typer.Exit(1)
 
 @app.command(
-    help="Automatically resets the MCU.\n\n"
+	help = "Set write protection of flash pages.",
+    epilog="Automatically resets the MCU.\n\n"
     "For write protection flash memory pages are grouped together in groups of 4. Because of this command parameters are required to be multiples of 4.\n\n"
     "The first page of the flash is numbered as 0, the last page is 127."
 )
@@ -387,7 +392,6 @@ def set_wrp(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help="Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Set write protection of flash pages."""
 
     if (start_page % 4 != 0) or (num_page % 4 != 0) or (num_page == 0) or (start_page + num_page > 128) or (start_page is None) or (num_page is None):
         raise typer.BadParameter(
@@ -438,7 +442,8 @@ def set_wrp(
         raise typer.Exit(1)
 
 @app.command(
-    help="The first page of the flash is numbered as 0, the last page is 127."
+	help="Erases the flash.",
+    epilog="The first page of the flash is numbered as 0, the last page is 127."
 )
 def erase(
     start_page: int = typer.Option(None, "--start_page", "-s", help="Page number to erase from (0 - 127)"),
@@ -448,7 +453,6 @@ def erase(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Erases the flash"""
 
     if ((mass_erase == False) and (start_page == None or num_page == None)):
         raise typer.BadParameter(
@@ -504,7 +508,8 @@ def erase(
         raise typer.Exit(1)
 
 @app.command(
-    help="Flash memory is mapped between 0x08000000 - 0x0801FFFF"
+	help="Writes to the flash.",
+    epilog="Flash memory is mapped between 0x08000000 - 0x0801FFFF"
 )
 def write(
     addr: str = typer.Option(..., "--addr", "-a", callback=parse_hex, help="Address in hex, e.g. 0x08004000"),
@@ -522,7 +527,6 @@ def write(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Writes to the flash."""
 
     file_size = file.stat().st_size
     file_size_remaining = file_size
@@ -578,7 +582,8 @@ def write(
         raise typer.Exit(1)
 
 @app.command(
-    help="Flash memory is mapped between 0x08000000 - 0x0801FFFF"
+	help="Reads from the flash.",
+    epilog="Flash memory is mapped between 0x08000000 - 0x0801FFFF."
 )
 def read(
     addr: str = typer.Option(..., "--addr", "-a", callback=parse_hex, help="Address in hex, e.g. 0x08004000"),
@@ -596,7 +601,6 @@ def read(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Reads from the flash."""
 
     try:
         with open_connection(port, baudrate) as ser:
@@ -659,7 +663,8 @@ def read(
         raise typer.Exit(1)
 
 @app.command(
-    help="The first page of the flash is numbered as 0, the last page is 127."
+	help="Erases then writes to the flash.",
+    epilog="The first page of the flash is numbered as 0, the last page is 127."
 )
 def program(
     start_page: int = typer.Option(None, "--start_page", "-s", help="Page number to erase from (0 - 127)"),
@@ -677,7 +682,6 @@ def program(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Erases then write to the flash."""
 
     if (start_page is None or start_page < 0 or start_page > 127):
         raise typer.BadParameter(
@@ -749,7 +753,8 @@ def program(
         raise typer.Exit(1)
 
 @app.command(
-    help="Flash memory is mapped between 0x08000000 - 0x0801FFFF"
+	help="Jumps to the specified address.",
+    epilog="Flash memory is mapped between 0x08000000 - 0x0801FFFF."
 )
 def jump(
     addr: str = typer.Option(..., "--addr", "-a", callback=parse_hex, help="Address in hex, e.g. 0x08004000"),
@@ -757,7 +762,6 @@ def jump(
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Jumps to the specified address"""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_JUMP_LEN
@@ -791,13 +795,14 @@ def jump(
         typer.echo(f"Connection error: {e}")
         raise typer.Exit(1)
 
-@app.command()
+@app.command(
+	help="Resets the MCU."
+)
 def rst(
     port: str = typer.Option(..., "--port", "-p", help = "Device opened on serial port, e.g. /dev/ttyUSB0" ),
     baudrate: int = typer.Option(115200, "--baudrate", "-b", help = "Communication speed with target"),
     debug: bool = typer.Option(False, "--debug", "-d", help = "Enables the debug messages")
 ):
-    """Resets the MCU."""
 
     packet_to_send = bytearray(255)
     packet_to_send[0] = CMD_RST_LEN

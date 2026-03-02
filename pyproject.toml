@@ -1,0 +1,10 @@
+[project]
+name = "dfutools"
+version = "0.1.0"
+dependencies = [
+    "typer[all]",
+    "pyserial"
+]
+
+[project.scripts]
+dfutools = "dfutools.cli:app"
